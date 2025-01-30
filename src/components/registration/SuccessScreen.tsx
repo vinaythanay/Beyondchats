@@ -21,11 +21,37 @@ import { MessageCircle } from "lucide-react";
 
 const SuccessScreen = () => {
   useEffect(() => {
-    confetti();
+    // Trigger multiple confetti bursts for a more celebratory effect
+    const triggerConfetti = () => {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+      }, 250);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+      }, 400);
+    };
+
+    triggerConfetti();
   }, []);
 
   const handleStartChat = () => {
-    // Close the dialog and trigger the chat widget
     const chatButton = document.querySelector('.fixed.bottom-4.right-4 button') as HTMLButtonElement;
     if (chatButton) {
       chatButton.click();
@@ -33,25 +59,34 @@ const SuccessScreen = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-primary-900">Setup Complete!</h1>
-        <p className="text-gray-500">
+    <div className="space-y-12">
+      <div className="space-y-4 text-center animate-fade-in">
+        <h1 className="text-4xl font-bold text-primary-900 animate-scale-in">
+          Setup Complete!
+        </h1>
+        <p className="text-gray-500 text-lg animate-fade-in" style={{ animationDelay: "0.2s" }}>
           Your chatbot is ready to assist your customers
         </p>
       </div>
 
-      <div className="space-y-4">
-        <Button className="w-full" size="lg">
+      <div className="space-y-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+        <Button 
+          className="w-full transform transition-all hover:scale-105 duration-300" 
+          size="lg"
+        >
           Explore Admin Panel
         </Button>
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" className="w-full" size="lg">
+            <Button 
+              variant="outline" 
+              className="w-full transform transition-all hover:scale-105 duration-300" 
+              size="lg"
+            >
               Start Talking to Your Chatbot
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] animate-scale-in">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-primary-600">
                 <MessageCircle className="h-5 w-5" />
@@ -99,16 +134,22 @@ const SuccessScreen = () => {
         </Dialog>
       </div>
 
-      <div className="space-y-4">
-        <FacebookShareButton url={window.location.href}>
-          <FacebookIcon size={32} round />
-        </FacebookShareButton>
-        <TwitterShareButton url={window.location.href}>
-          <TwitterIcon size={32} round />
-        </TwitterShareButton>
-        <LinkedinShareButton url={window.location.href}>
-          <LinkedinIcon size={32} round />
-        </LinkedinShareButton>
+      <div className="flex justify-center items-center gap-6 pt-8 animate-fade-in" style={{ animationDelay: "0.6s" }}>
+        <div className="transform transition-all hover:scale-110 duration-300">
+          <FacebookShareButton url={window.location.href}>
+            <FacebookIcon size={48} round className="shadow-lg" />
+          </FacebookShareButton>
+        </div>
+        <div className="transform transition-all hover:scale-110 duration-300">
+          <TwitterShareButton url={window.location.href}>
+            <TwitterIcon size={48} round className="shadow-lg" />
+          </TwitterShareButton>
+        </div>
+        <div className="transform transition-all hover:scale-110 duration-300">
+          <LinkedinShareButton url={window.location.href}>
+            <LinkedinIcon size={48} round className="shadow-lg" />
+          </LinkedinShareButton>
+        </div>
       </div>
     </div>
   );
