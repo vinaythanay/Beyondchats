@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import React from "react";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <ChatbotWidget />
             <Toaster />
             <Sonner />
           </TooltipProvider>

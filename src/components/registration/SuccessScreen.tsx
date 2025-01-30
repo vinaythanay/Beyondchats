@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
+import confetti from "canvas-confetti";
 import {
+  FacebookShareButton,
+  FacebookIcon,
   TwitterShareButton,
-  LinkedinShareButton,
   TwitterIcon,
+  LinkedinShareButton,
   LinkedinIcon,
 } from "react-share";
 import {
@@ -19,44 +21,23 @@ import { MessageCircle } from "lucide-react";
 
 const SuccessScreen = () => {
   useEffect(() => {
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-
-    const randomInRange = (min: number, max: number) => {
-      return Math.random() * (max - min) + min;
-    };
-
-    const interval = setInterval(() => {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        clearInterval(interval);
-        return;
-      }
-
-      const particleCount = 50 * (timeLeft / duration);
-
-      confetti({
-        particleCount,
-        spread: randomInRange(60, 100),
-        origin: { x: randomInRange(0.1, 0.9), y: randomInRange(0.1, 0.9) },
-      });
-    }, 250);
-
-    return () => clearInterval(interval);
+    confetti();
   }, []);
 
-  const shareUrl = "https://beyondchats.com";
-  const shareTitle = "I just set up my AI chatbot with BeyondChats! 🤖✨";
+  const handleStartChat = () => {
+    // Close the dialog and trigger the chat widget
+    const chatButton = document.querySelector('.fixed.bottom-4.right-4 button') as HTMLButtonElement;
+    if (chatButton) {
+      chatButton.click();
+    }
+  };
 
   return (
-    <div className="text-center space-y-8">
-      <div className="space-y-4">
-        <h2 className="text-3xl font-bold text-primary-600">
-          🎉 Setup Complete! 🎉
-        </h2>
-        <p className="text-gray-600">
-          Your chatbot is now ready to assist your customers
+    <div className="space-y-8">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold text-primary-900">Setup Complete!</h1>
+        <p className="text-gray-500">
+          Your chatbot is ready to assist your customers
         </p>
       </div>
 
@@ -86,25 +67,31 @@ const SuccessScreen = () => {
                   <MessageCircle className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">Product Information</p>
-                    <p className="text-sm text-primary-600">Get details about features, pricing, and specifications</p>
+                    <p className="text-sm text-primary-600">
+                      Get details about features, pricing, and specifications
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-primary-50 text-primary-700">
                   <MessageCircle className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">Customer Support</p>
-                    <p className="text-sm text-primary-600">Resolve common issues and get technical assistance</p>
+                    <p className="text-sm text-primary-600">
+                      Resolve common issues and get technical assistance
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-primary-50 text-primary-700">
                   <MessageCircle className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">General Inquiries</p>
-                    <p className="text-sm text-primary-600">Learn about our company, policies, and services</p>
+                    <p className="text-sm text-primary-600">
+                      Learn about our company, policies, and services
+                    </p>
                   </div>
                 </div>
               </div>
-              <Button className="w-full mt-4">
+              <Button className="w-full mt-4" onClick={handleStartChat}>
                 Start Chat
               </Button>
             </div>
@@ -113,15 +100,15 @@ const SuccessScreen = () => {
       </div>
 
       <div className="space-y-4">
-        <p className="text-sm text-gray-500">Share your success!</p>
-        <div className="flex justify-center gap-4">
-          <TwitterShareButton url={shareUrl} title={shareTitle}>
-            <TwitterIcon size={32} round />
-          </TwitterShareButton>
-          <LinkedinShareButton url={shareUrl} title={shareTitle}>
-            <LinkedinIcon size={32} round />
-          </LinkedinShareButton>
-        </div>
+        <FacebookShareButton url={window.location.href}>
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+        <TwitterShareButton url={window.location.href}>
+          <TwitterIcon size={32} round />
+        </TwitterShareButton>
+        <LinkedinShareButton url={window.location.href}>
+          <LinkedinIcon size={32} round />
+        </LinkedinShareButton>
       </div>
     </div>
   );
