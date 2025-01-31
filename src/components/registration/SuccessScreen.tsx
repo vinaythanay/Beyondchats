@@ -9,15 +9,7 @@ import {
   LinkedinShareButton,
   LinkedinIcon,
 } from "react-share";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { MessageCircle } from "lucide-react";
+import WebsiteScraping from "./WebsiteScraping";
 
 const SuccessScreen = () => {
   useEffect(() => {
@@ -51,13 +43,6 @@ const SuccessScreen = () => {
     triggerConfetti();
   }, []);
 
-  const handleStartChat = () => {
-    const chatButton = document.querySelector('.fixed.bottom-4.right-4 button') as HTMLButtonElement;
-    if (chatButton) {
-      chatButton.click();
-    }
-  };
-
   return (
     <div className="space-y-12">
       <div className="space-y-4 text-center animate-fade-in">
@@ -76,65 +61,13 @@ const SuccessScreen = () => {
         >
           Explore Admin Panel
         </Button>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="w-full transform transition-all hover:scale-105 duration-300" 
-              size="lg"
-            >
-              Start Talking to Your Chatbot
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] animate-scale-in">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-primary-600">
-                <MessageCircle className="h-5 w-5" />
-                Chatbot Assistant
-              </DialogTitle>
-              <DialogDescription>
-                Your AI assistant is ready to help! Ask anything about:
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary-50 text-primary-700">
-                  <MessageCircle className="h-5 w-5 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Product Information</p>
-                    <p className="text-sm text-primary-600">
-                      Get details about features, pricing, and specifications
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary-50 text-primary-700">
-                  <MessageCircle className="h-5 w-5 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Customer Support</p>
-                    <p className="text-sm text-primary-600">
-                      Resolve common issues and get technical assistance
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary-50 text-primary-700">
-                  <MessageCircle className="h-5 w-5 mt-0.5" />
-                  <div>
-                    <p className="font-medium">General Inquiries</p>
-                    <p className="text-sm text-primary-600">
-                      Learn about our company, policies, and services
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <Button className="w-full mt-4" onClick={handleStartChat}>
-                Start Chat
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
-      <div className="flex justify-center items-center gap-6 pt-8 animate-fade-in" style={{ animationDelay: "0.6s" }}>
+      <div className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
+        <WebsiteScraping onNext={() => {}} onBack={() => {}} />
+      </div>
+
+      <div className="flex justify-center items-center gap-6 pt-8 animate-fade-in" style={{ animationDelay: "0.8s" }}>
         <div className="transform transition-all hover:scale-110 duration-300">
           <FacebookShareButton url={window.location.href}>
             <FacebookIcon size={48} round className="shadow-lg" />
