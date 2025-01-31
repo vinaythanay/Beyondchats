@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MessageSquare, LayoutDashboard } from "lucide-react";
 
 // Dummy data for website scraping status
 const websitePages = [
@@ -83,12 +84,22 @@ const SuccessScreen = () => {
       </div>
 
       <div className="space-y-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-        <Button 
-          className="w-full transform transition-all hover:scale-105 duration-300" 
-          size="lg"
-        >
-          Explore Admin Panel
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button 
+            className="flex-1 transform transition-all hover:scale-105 duration-300" 
+            size="lg"
+          >
+            <MessageSquare className="mr-2 h-5 w-5" />
+            Start talking to your chatbot
+          </Button>
+          <Button 
+            className="flex-1 transform transition-all hover:scale-105 duration-300" 
+            size="lg"
+          >
+            <LayoutDashboard className="mr-2 h-5 w-5" />
+            Explore Admin Panel
+          </Button>
+        </div>
       </div>
 
       <div className="animate-fade-in rounded-lg border p-4" style={{ animationDelay: "0.6s" }}>
