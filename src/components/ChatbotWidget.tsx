@@ -28,8 +28,14 @@ const ChatbotWidget = () => {
       setIsLoading(true);
       setMessages((prev) => [...prev, { text: inputMessage, sender: "user" }]);
 
-      // Initialize Gemini AI
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+      // Initialize Gemini AI with the API key from environment
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        throw new Error("Gemini API key not found. Please add it in the project settings.");
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       // Generate content
@@ -42,7 +48,7 @@ const ChatbotWidget = () => {
       console.error('Error generating response:', error);
       toast({
         title: "Error",
-        description: "Failed to generate response. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate response. Please try again.",
         variant: "destructive",
       });
     } finally {
