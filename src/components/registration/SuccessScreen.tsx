@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import {
@@ -9,11 +9,34 @@ import {
   LinkedinShareButton,
   LinkedinIcon,
 } from "react-share";
-import WebsiteScraping from "./WebsiteScraping";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+// Dummy data for website scraping status
+const websitePages = [
+  { id: 1, url: '/home', status: 'completed', chunks: ['Welcome section', 'Product overview', 'Contact information'] },
+  { id: 2, url: '/about', status: 'completed', chunks: ['Company history', 'Team members', 'Mission statement'] },
+  { id: 3, url: '/products', status: 'pending', chunks: [] },
+  { id: 4, url: '/contact', status: 'in_progress', chunks: ['Contact form'] },
+];
 
 const SuccessScreen = () => {
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   useEffect(() => {
-    // Trigger multiple confetti bursts for a more celebratory effect
     const triggerConfetti = () => {
       confetti({
         particleCount: 100,
@@ -43,6 +66,11 @@ const SuccessScreen = () => {
     triggerConfetti();
   }, []);
 
+  const handlePageClick = (page) => {
+    setSelectedPage(page);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-12">
       <div className="space-y-4 text-center animate-fade-in">
@@ -50,7 +78,7 @@ const SuccessScreen = () => {
           Setup Complete!
         </h1>
         <p className="text-gray-500 text-lg animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          Your chatbot is ready to assist your customers
+          Your chatbot is being trained with your website content
         </p>
       </div>
 
@@ -63,8 +91,43 @@ const SuccessScreen = () => {
         </Button>
       </div>
 
-      <div className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
-        <WebsiteScraping onNext={() => {}} onBack={() => {}} />
+      <div className="animate-fade-in rounded-lg border p-4" style={{ animationDelay: "0.6s" }}>
+        <h2 className="text-xl font-semibold mb-4">Website Content Analysis</h2>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Page URL</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {websitePages.map((page) => (
+              <TableRow key={page.id}>
+                <TableCell>{page.url}</TableCell>
+                <TableCell>
+                  <span className={`px-2 py-1 rounded-full text-sm ${
+                    page.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    page.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {page.status.charAt(0).toUpperCase() + page.status.slice(1)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageClick(page)}
+                    disabled={page.status === 'pending'}
+                  >
+                    View Details
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       <div className="flex justify-center items-center gap-6 pt-8 animate-fade-in" style={{ animationDelay: "0.8s" }}>
@@ -84,6 +147,23 @@ const SuccessScreen = () => {
           </LinkedinShareButton>
         </div>
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Content Chunks - {selectedPage?.url}</DialogTitle>
+          </DialogHeader>
+          {selectedPage?.chunks.length > 0 ? (
+            <ul className="list-disc pl-6 space-y-2">
+              {selectedPage.chunks.map((chunk, index) => (
+                <li key={index} className="text-gray-700">{chunk}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500 italic">No content chunks available yet.</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
