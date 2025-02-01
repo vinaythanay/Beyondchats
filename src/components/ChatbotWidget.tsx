@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from "@/integrations/supabase/client";
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,22 +28,13 @@ const ChatbotWidget = () => {
       setIsLoading(true);
       setMessages((prev) => [...prev, { text: inputMessage, sender: "user" }]);
 
-      // Initialize Gemini AI with the API key from environment
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      if (!apiKey) {
-        throw new Error("Gemini API key not found. Please add it in the project settings.");
-      }
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { message: inputMessage }
+      });
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      if (error) throw error;
 
-      // Generate content
-      const result = await model.generateContent(inputMessage);
-      const response = await result.response;
-      const text = response.text();
-
-      setMessages((prev) => [...prev, { text, sender: "bot" }]);
+      setMessages((prev) => [...prev, { text: data.text, sender: "bot" }]);
     } catch (error) {
       console.error('Error generating response:', error);
       toast({
