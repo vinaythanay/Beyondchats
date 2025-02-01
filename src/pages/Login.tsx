@@ -3,25 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { FcGoogle } from "react-icons/fc";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const handleResendVerification = async () => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
       });
 
       if (error) {
@@ -30,6 +29,42 @@ const Login = () => {
           description: error.message,
           variant: "destructive",
         });
+      } else {
+        toast({
+          title: "Success",
+          description: "Verification email sent! Please check your inbox.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to resend verification email",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setEmailNotVerified(false);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes("Email not confirmed")) {
+          setEmailNotVerified(true);
+        } else {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Success",
@@ -87,6 +122,22 @@ const Login = () => {
             </a>
           </p>
         </div>
+
+        {emailNotVerified && (
+          <Alert>
+            <AlertDescription className="text-center">
+              Please verify your email before logging in.
+              <Button
+                variant="link"
+                className="ml-2 text-primary-600"
+                onClick={handleResendVerification}
+              >
+                Resend verification email
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
@@ -115,15 +166,13 @@ const Login = () => {
             </div>
           </div>
 
-          <div>
-            <Button
-              type="submit"
-              className="w-full bg-primary-600 hover:bg-primary-700"
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </Button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -139,7 +188,8 @@ const Login = () => {
           <Button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex justify-center items-center space-x-2 border border-gray-300 rounded-md px-4 py-2 bg-white text-gray-700 hover:bg-gray-50"
+            variant="outline"
+            className="w-full flex justify-center items-center space-x-2"
           >
             <FcGoogle className="h-5 w-5" />
             <span>Sign in with Google</span>
