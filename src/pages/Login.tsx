@@ -49,6 +49,16 @@ const Login = () => {
     setLoading(true);
     setEmailNotVerified(false);
 
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please enter both email and password",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -58,6 +68,12 @@ const Login = () => {
       if (error) {
         if (error.message.includes("Email not confirmed")) {
           setEmailNotVerified(true);
+        } else if (error.message.includes("Invalid login credentials")) {
+          toast({
+            title: "Error",
+            description: "Invalid email or password. Please try again.",
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Error",
@@ -87,6 +103,9 @@ const Login = () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/registration`
+        }
       });
 
       if (error) {
