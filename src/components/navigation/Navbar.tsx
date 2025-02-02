@@ -3,11 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Home, Info, Settings, HelpCircle, MessageSquare, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check initial auth state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
@@ -48,7 +64,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <MessageSquare className="h-8 w-8 text-primary-600 mr-2" />
-              <span className="text-xl font-bold text-primary-900">BotSetup</span>
+              <span className="text-xl font-bold text-primary-900">AiConverse</span>
             </Link>
             <div className="hidden md:flex space-x-8 ml-10">
               {navItems.map((item) => (
@@ -68,27 +84,32 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              className="text-gray-600 hover:text-primary-600"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </Button>
-            <Button
-              className="bg-primary-600 text-white hover:bg-primary-700"
-              onClick={() => navigate("/signup")}
-            >
-              Get Started
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-gray-600 hover:text-primary-600"
-              onClick={handleLogout}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-gray-600 hover:text-primary-600"
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </Button>
+                <Button
+                  className="bg-primary-600 text-white hover:bg-primary-700"
+                  onClick={() => navigate("/signup")}
+                >
+                  Get Started
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                className="text-gray-600 hover:text-primary-600"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            )}
           </div>
         </div>
       </div>
