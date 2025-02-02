@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ text: string; sender: "user" | "bot" }[]>([
-    { text: "Hi! How can I help you today?", sender: "bot" },
+    { text: "Hi! I'm your AI assistant powered by Gemini. How can I help you today?", sender: "bot" },
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +33,10 @@ const ChatbotWidget = () => {
       });
 
       if (error) throw error;
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
       setMessages((prev) => [...prev, { text: data.text, sender: "bot" }]);
     } catch (error) {
@@ -56,7 +60,7 @@ const ChatbotWidget = () => {
             <div className="flex justify-between items-center">
               <CardTitle className="text-lg flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
-                Chat Assistant
+                Gemini Chat Assistant
               </CardTitle>
               <Button
                 variant="ghost"

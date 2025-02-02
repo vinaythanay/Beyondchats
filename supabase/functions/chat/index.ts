@@ -13,28 +13,42 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json();
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key not configured');
+    }
+
+    console.log('Sending request to Gemini API with message:', message);
+
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
         'Content-Type': 'application/json',
+        'x-goog-api-key': geminiApiKey,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a helpful AI assistant.' },
-          { role: 'user', content: message }
-        ],
+        contents: [{
+          parts: [{
+            text: message
+          }]
+        }]
       }),
     });
 
-    const data = await response.json();
-    console.log('AI response:', data);
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Gemini API error:', errorData);
+      throw new Error(`Gemini API error: ${errorData}`);
+    }
 
-    return new Response(JSON.stringify({ 
-      text: data.choices[0].message.content 
-    }), {
+    const data = await response.json();
+    console.log('Gemini API response:', data);
+
+    // Extract the response text from the Gemini API response
+    const text = data.candidates[0].content.parts[0].text;
+
+    return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
