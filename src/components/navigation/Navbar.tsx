@@ -1,13 +1,37 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Info, Settings, HelpCircle, MessageSquare } from "lucide-react";
+import { Home, Info, Settings, HelpCircle, MessageSquare, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+      
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const navItems = [
@@ -56,6 +80,14 @@ const Navbar = () => {
               onClick={() => navigate("/signup")}
             >
               Get Started
+            </Button>
+            <Button
+              variant="ghost"
+              className="text-gray-600 hover:text-primary-600"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
             </Button>
           </div>
         </div>
