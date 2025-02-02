@@ -70,7 +70,7 @@ const Login = () => {
           title: "Success",
           description: "Logged in successfully!",
         });
-        navigate("/registration/organization");
+        navigate("/registration");
       }
     } catch (error) {
       toast({

@@ -9,6 +9,7 @@ import Services from "./pages/Services";
 import Help from "./pages/Help";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Registration from "./pages/Registration";
 import NotFound from "./pages/NotFound";
 import React from "react";
 import ChatbotWidget from "./components/ChatbotWidget";
@@ -30,6 +31,7 @@ function App() {
               <Route path="/help" element={<Help />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/registration" element={<Registration />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <ChatbotWidget />
