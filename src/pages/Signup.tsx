@@ -67,7 +67,7 @@ const Signup = () => {
         title: "Success",
         description: "Email verified successfully!",
       });
-      navigate("/registration/organization");
+      navigate("/registration");
     } catch (error) {
       toast({
         title: "Error",
@@ -81,8 +81,16 @@ const Signup = () => {
 
   const handleGoogleSignup = async () => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/registration`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
       });
 
       if (error) {
@@ -95,9 +103,11 @@ const Signup = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "Failed to sign up with Google",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -184,7 +194,9 @@ const Signup = () => {
             <Button
               type="button"
               onClick={handleGoogleSignup}
-              className="w-full flex justify-center items-center space-x-2 border border-gray-300 rounded-md px-4 py-2 bg-white text-gray-700 hover:bg-gray-50"
+              variant="outline"
+              className="w-full flex justify-center items-center space-x-2"
+              disabled={loading}
             >
               <FcGoogle className="h-5 w-5" />
               <span>Sign up with Google</span>

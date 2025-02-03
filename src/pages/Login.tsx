@@ -101,10 +101,15 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/registration`
+          redirectTo: `${window.location.origin}/registration`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
 
@@ -118,9 +123,11 @@ const Login = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "Failed to sign in with Google",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -209,6 +216,7 @@ const Login = () => {
             onClick={handleGoogleLogin}
             variant="outline"
             className="w-full flex justify-center items-center space-x-2"
+            disabled={loading}
           >
             <FcGoogle className="h-5 w-5" />
             <span>Sign in with Google</span>
